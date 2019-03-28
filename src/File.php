@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Przeslijmi\SiHDD;
 
@@ -17,8 +17,6 @@ use Przeslijmi\Sivalidator\RegEx;
  * $file->setContents('test');
  * $file->save();
  * ```
- *
- * @version v1.0
  */
 class File
 {
@@ -26,7 +24,7 @@ class File
     /**
      * Path object.
      *
-     * @var Path
+     * @var   Path
      * @since v1.0
      */
     private $path;
@@ -34,7 +32,7 @@ class File
     /**
      * Contents of the file.
      *
-     * @var string
+     * @var   string
      * @since v1.0
      */
     private $contents = '';
@@ -42,23 +40,24 @@ class File
     /**
      * Constructor.
      *
-     * @param string $fullPath [description]
-     * @throws ClassFopException creationOfFile On wrong path.
-     * @throws ClassFopException filePathCannotBeADirPath
-     * @since v1.0
+     * @param string $fullPath Full path to the file.
+     *
+     * @throws ClassFopException With creationOfFile context when creation of ne Path object failed.
+     * @throws ClassFopException With filePathCannotBeADirPath context when given path is directory.
+     * @since  v1.0
      */
     public function __construct(string $fullPath)
     {
 
-        // save path
+        // Save path.
         try {
             $this->path = new Path($fullPath);
         } catch (ClassFopException $e) {
             throw (new ClassFopException('creationOfFile', $e))->addInfo('fullPath', $fullPath);
         }
 
-        // check if this is not dir path
-        if ($this->path->isDir()) {
+        // Check if this is not dir path.
+        if ($this->path->isDir() === true) {
             throw (new ClassFopException('filePathCannotBeADirPath'))->addInfo('fullPath', $fullPath);
         }
     }
@@ -66,9 +65,10 @@ class File
     /**
      * File contents setter (not saves, only sets).
      *
-     * @param string $contents
+     * @param string $contents Contents to be set (repleaced) in file.
+     *
      * @return File
-     * @since v1.0
+     * @since  v1.0
      */
     public function setContents(string $contents) : File
     {
@@ -82,7 +82,7 @@ class File
      * File contents getter (read file before use).
      *
      * @return string
-     * @since v1.0
+     * @since  v1.0
      */
     public function getContents() : string
     {
@@ -91,28 +91,35 @@ class File
     }
 
     /**
+     * Getter for Path object.
+     *
+     * @since  v1.0
+     * @return Path
+     */
+    public function getPath() : Path
+    {
+
+        return $this->path;
+    }
+
+    /**
      * Reads file from location and returns contents.
      *
      * @return string
-     * @throws FileDonoexException
-     * @throws PointerWrosynException readFileButIsNotAFile
-     * @throws ClassFopException
-     * @since v1.0
+     * @throws FileDonoexException    When file does not exists.
+     * @throws PointerWrosynException When the pointer points not to a file.
+     * @throws ClassFopException      If reading is corrupted, not possible.
+     * @since  v1.0
      */
     public function read() : string
     {
 
-        if ($this->path->isNotExisting()) {
+        if ($this->path->isNotExisting() === true) {
             throw new FileDonoexException('read', $this->path->getPath());
-        } elseif ($this->path->isNotFile()) {
+        } elseif ($this->path->isNotFile() === true) {
             throw (new PointerWrosynException('readFileButIsNotAFile'))->addInfo('fullPath', $this->path->getPath());
         } else {
-
-            try {
-                $this->contents = file_get_contents($this->path->getPath());
-            } catch (\Exception $e) {
-                throw (new ClassFopException('readingOfTheFile', $e))->addInfo('fullPath', $this->path->getPath());
-            }
+            $this->contents = file_get_contents($this->path->getPath());
         }
 
         return $this->contents;
@@ -122,45 +129,44 @@ class File
      * Reads file only if exists, otherwise returns empty string.
      *
      * @return string
-     * @since v1.0
+     * @since  v1.0
      */
     public function readIfExists() : string
     {
 
-        if ($this->path->isFile()) {
+        if ($this->path->isFile() === true) {
             return $this->read();
         }
 
-        return '';
+        $this->contents = '';
+
+        return $this->contents;
     }
 
     /**
      * Saves file and creates deep dirs if needed.
      *
      * @return void
-     * @throws ClassFopException savefailed
-     * @since v1.0
+     * @throws ClassFopException On saveFailed.
+     * @since  v1.0
      */
     public function save() : void
     {
 
-        if ($this->path->isNotExisting()) {
+        if ($this->path->isNotExisting() === true) {
             $this->path->createDirs();
         }
 
-        try {
-            file_put_contents($this->path->getPath(), $this->contents);
-        } catch (\Exception $e) {
-            throw new ClassFopException('saveFailed', $this->path->getPath(), $e);
-        }
+        file_put_contents($this->path->getPath(), $this->contents);
     }
 
     /**
      * Append (and saves) extra contents to the file.
      *
-     * @param string $contents
+     * @param string $contents Contents to be added.
+     *
      * @return void
-     * @since v1.0
+     * @since  v1.0
      */
     public function append(string $contents) : void
     {
@@ -173,9 +179,10 @@ class File
     /**
      * Append (and saves) extra line of contents to the file.
      *
-     * @param string $contents
+     * @param string $contents Line contents to be added.
+     *
      * @return void
-     * @since v1.0
+     * @since  v1.0
      */
     public function appendLine(string $contents) : void
     {
@@ -187,13 +194,13 @@ class File
      * Deletes file from location.
      *
      * @return void
-     * @throws FileDonoexException unableToDeleteNonexistingFile
-     * @since v1.0
+     * @throws FileDonoexException On unableToDeleteNonexistingFile.
+     * @since  v1.0
      */
     public function delete() : void
     {
 
-        if ($this->path->isNotExisting()) {
+        if ($this->path->isNotExisting() === true) {
             throw new FileDonoexException('unableToDeleteNonexistingFile', $this->path->getPath());
         }
 
@@ -204,12 +211,12 @@ class File
      * Deletes file from location if it exists.
      *
      * @return void
-     * @since v1.0
+     * @since  v1.0
      */
     public function deleteIfExists() : void
     {
 
-        if ($this->path->isExisting()) {
+        if ($this->path->isExisting() === true) {
             $this->delete();
         }
     }
@@ -218,13 +225,13 @@ class File
      * Creates file - ie saves it with given contents only if the file not exists.
      *
      * @return void
-     * @throws FileAlrexException
-     * @since v1.0
+     * @throws FileAlrexException On unableToCreateExistingFile.
+     * @since  v1.0
      */
     public function create() : void
     {
 
-        if ($this->path->isExisting()) {
+        if ($this->path->isExisting() === true) {
             throw new FileAlrexException('unableToCreateExistingFile', $this->path->getPath());
         }
 

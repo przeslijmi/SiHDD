@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Przeslijmi\SiHDD;
 
@@ -36,16 +36,17 @@ class Path
      *
      * @param string $path Whole path.
      *
-     * @since v1.0
+     * @throws ClassFopException On creationOfPath when creation of path is not possible.
+     * @since  v1.0
      */
     public function __construct(string $path)
     {
 
-        // save
-        $this->path = str_replace([ '/', '\\' ], $this->sep, $path);
+        // Save.
+        $this->path  = str_replace([ '/', '\\' ], $this->sep, $path);
         $this->parts = explode($this->sep, $this->path);
 
-        // test
+        // Test.
         try {
             $this->test();
         } catch (ParamWrosynException $e) {
@@ -74,7 +75,7 @@ class Path
     public function isNotExisting() : bool
     {
 
-        return !($this->isExisting());
+        return ! ( $this->isExisting() );
     }
 
     /**
@@ -86,7 +87,7 @@ class Path
     public function isDir() : bool
     {
 
-        return (file_exists($this->path) && is_dir($this->path));
+        return ( file_exists($this->path) && is_dir($this->path) );
     }
 
     /**
@@ -98,7 +99,7 @@ class Path
     public function isNotDir() : bool
     {
 
-        return !($this->isDir());
+        return ! ( $this->isDir() );
     }
 
     /**
@@ -110,7 +111,7 @@ class Path
     public function isFile() : bool
     {
 
-        return (file_exists($this->path) && is_file($this->path));
+        return ( file_exists($this->path) && is_file($this->path) );
     }
 
     /**
@@ -122,7 +123,7 @@ class Path
     public function isNotFile() : bool
     {
 
-        return !($this->isFile());
+        return ! ( $this->isFile() );
     }
 
     /**
@@ -140,28 +141,87 @@ class Path
     /**
      * Called to create all nonexisting directories on this path.
      *
+     * @param boolean $createLastDirAlso Opt., false. If set to true last element of the path
+     *                                                is also treated as a dir and created.
+     *
      * @since  v1.0
-     * @return string
+     * @return void
      */
-    public function createDirs() : void
+    public function createDirs(bool $createLastDirAlso = false) : void
     {
 
-        // calculate starting path (from cwd)
+        // Calculate starting path (from cwd).
         $risingPath = $this->calculateRisingPath();
+        $partsButLast = array_slice($this->parts, 0, ( count($this->parts) - 1 ));
+        $lastPart = implode('', array_slice($this->parts, -1));
 
-        // parts from 0 to (n-1) have to be dirs if existing
-        foreach (array_slice($this->parts, 0, (count($this->parts) - 1)) as $partNo => $part) {
+        // Parts from 0 to (n-1) have to be dirs if existing.
+        foreach ($partsButLast as $partNo => $part) {
 
-            // increase
+            // Increase.
             $risingPath .= $part;
 
-            // test
+            // Test.
             if (file_exists($risingPath) === false) {
                 mkdir($risingPath);
             }
 
-            // add separators
+            // Add separators.
             $risingPath .= $this->sep;
+        }
+
+        if ($createLastDirAlso === true && file_exists($risingPath . $lastPart) === false) {
+            mkdir($risingPath . $lastPart);
+        }
+    }
+
+    /**
+     * Deletes empty (only empty) dirs in path, deeper then param.
+     *
+     * Usage example
+     * ```
+     * $path = new Path('existingAndProtected/sub1/sub11/sub111');
+     * $path->deleteEmptyDirs(0); // will delete existingAndProtected/sub1/sub11/sub111
+     * $path->deleteEmptyDirs(1); // will delete                      sub1/sub11/sub111
+     * $path->deleteEmptyDirs(2); // will delete                           sub11/sub111
+     * $path->deleteEmptyDirs(3); // will delete                                 sub111
+     * ```
+     *
+     * @param integer $startingWithPart Obligatory - to delete whole path insert 0.
+     *
+     * @since  v1.0
+     * @return void
+     */
+    public function deleteEmptyDirs(int $startingWithPart) : void
+    {
+
+        // Calculate starting path (from cwd).
+        $risingPath = $this->calculateRisingPath();
+        $partsReversed = array_reverse($this->parts, true);
+
+        // Analyze every dir in reversed order.
+        foreach ($partsReversed As $partNo => $part) {
+
+            // Do not delete earlier dirs than this index.
+            if ($partNo < $startingWithPart) {
+                break;
+            }
+
+            // Lvd.
+            $fullPath = implode($this->sep, array_slice($this->parts, 0, ($partNo + 1)));
+
+            // If this is already deleted (nonexisting) - then ignore.
+            if (!file_exists($fullPath)) {
+                continue;
+            }
+
+            // If the dir is not empty - do NOT delete it.
+            if (count(scandir($fullPath)) > 2) {
+                break;
+            }
+
+            // Everything looks nice - delete.
+            rmdir($fullPath);
         }
     }
 
@@ -179,7 +239,8 @@ class Path
         if (empty($this->parts[0]) === true) {
             $risingPath = '';
         } else {
-            $risingPath = rtrim(getcwd(), $this->sep) . $this->sep; // string
+            // It is still a string.
+            $risingPath = rtrim(getcwd(), $this->sep) . $this->sep;
         }
 
         return $risingPath;
@@ -195,26 +256,26 @@ class Path
     private function test() : void
     {
 
-        // every part has to be proper
+        // Every part has to be proper.
         foreach ($this->parts as $partNo => $part) {
             $this->isPartOfPathProper($partNo);
         }
 
-        // calculate starting path (from cwd)
+        // Calculate starting path (from cwd).
         $risingPath = $this->calculateRisingPath();
 
-        // parts from 0 to (n-1) have to be dirs if existing
-        foreach (array_slice($this->parts, 0, (count($this->parts) - 1)) as $partNo => $part) {
+        // Parts from 0 to (n-1) have to be dirs if existing.
+        foreach (array_slice($this->parts, 0, ( count($this->parts) - 1 )) as $partNo => $part) {
 
-            // increase
+            // Increase.
             $risingPath .= $part;
 
-            // test
+            // Test.
             if (file_exists($risingPath) === true && is_dir($risingPath) === false) {
                 throw new ParamWrosynException('notLastPartOfPathHasToBeDirIfExists', $risingPath);
             }
 
-            // add separators
+            // Add separators.
             $risingPath .= $this->sep;
         }
     }
@@ -222,26 +283,26 @@ class Path
     /**
      * Check if one (each) part of path is proper.
      *
-     * @param int  $partNo Counting from 0 part of a paht.
-     * @param bool $throw  (opt., true) Throws on error if set to true, otherwise return false.
+     * @param integer $partNo Counting from 0 part of a paht.
+     * @param boolean $throw  Opt., true. Throws on error if set to true, otherwise return false.
      *
      * @throws ParamWrosynException When part of the path does not meat regex regulations.
      * @since  v1.0
-     * @return bool
+     * @return boolean
      */
-    private function isPartOfPathProper(int $partNo, bool $throw=true) : bool
+    private function isPartOfPathProper(int $partNo, bool $throw = true) : bool
     {
 
-        // lvd
-        $part = $this->parts[$partNo];
+        // Lvd.
+        $part   = $this->parts[$partNo];
         $result = (bool) false;
 
-        // if this part is empty - it is ok
+        // If this part is empty - it is ok.
         if (empty($part) === true) {
             return true;
         }
 
-        // run regex test to make sure this is proper path part
+        // Run regex test to make sure this is proper path part.
         try {
             $result = RegEx::ifMatches($part, '/^([a-zA-Z0-9_\.])+$/');
         } catch (RegexTestFailException $e) {
