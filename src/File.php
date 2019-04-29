@@ -7,6 +7,7 @@ use Przeslijmi\Sexceptions\Exceptions\FileAlrexException;
 use Przeslijmi\Sexceptions\Exceptions\FileDonoexException;
 use Przeslijmi\Sexceptions\Exceptions\PointerWrosynException;
 use Przeslijmi\Sivalidator\RegEx;
+use Przeslijmi\Sivalidator\GeoProgression;
 
 /**
  * Serves File operations on HDD.
@@ -20,6 +21,14 @@ use Przeslijmi\Sivalidator\RegEx;
  */
 class File
 {
+
+    /**
+     * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
+     *
+     * @todo There is no control.
+     * @var  int
+     */
+    const ALLOW_DIR_DOTS = 1;
 
     /**
      * Path object.
@@ -38,20 +47,34 @@ class File
     private $contents = '';
 
     /**
+     * Options sent on construction.
+     *
+     * @var   array
+     * @since v1.0
+     */
+    private $options = [];
+
+    /**
      * Constructor.
      *
-     * @param string $fullPath Full path to the file.
+     * @param string  $fullPath Full path to the file.
+     * @param integer $options  Options transferred ad const (see above).
      *
      * @throws ClassFopException With creationOfFile context when creation of ne Path object failed.
      * @throws ClassFopException With filePathCannotBeADirPath context when given path is directory.
      * @since  v1.0
      */
-    public function __construct(string $fullPath)
+    public function __construct(string $fullPath, int $options = 0)
     {
+
+        // Read options.
+        if ($options > 0) {
+            $this->options = GeoProgression::getProgression($options);
+        }
 
         // Save path.
         try {
-            $this->path = new Path($fullPath);
+            $this->path = new Path($fullPath, $options);
         } catch (ClassFopException $e) {
             throw (new ClassFopException('creationOfFile', $e))->addInfo('fullPath', $fullPath);
         }
@@ -108,7 +131,6 @@ class File
      * @return string
      * @throws FileDonoexException    When file does not exists.
      * @throws PointerWrosynException When the pointer points not to a file.
-     * @throws ClassFopException      If reading is corrupted, not possible.
      * @since  v1.0
      */
     public function read() : string

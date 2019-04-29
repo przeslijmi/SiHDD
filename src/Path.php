@@ -3,12 +3,25 @@
 namespace Przeslijmi\SiHDD;
 
 use Przeslijmi\Sexceptions\Exceptions\ClassFopException;
+use Przeslijmi\Sexceptions\Exceptions\MethodFopException;
 use Przeslijmi\Sexceptions\Exceptions\ParamWrosynException;
 use Przeslijmi\Sexceptions\Exceptions\RegexTestFailException;
+use Przeslijmi\Sivalidator\GeoProgression;
 use Przeslijmi\Sivalidator\RegEx;
 
+/**
+ * Object representing dir - used alone or incompound with File.
+ */
 class Path
 {
+
+    /**
+     * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
+     *
+     * @todo There is no control.
+     * @var  int
+     */
+    const ALLOW_DIR_DOTS = 1;
 
     /**
      * String representation of whole path.
@@ -34,13 +47,19 @@ class Path
     /**
      * Constructor.
      *
-     * @param string $path Whole path.
+     * @param string  $path    Whole path.
+     * @param integer $options Options transferred ad const (see above).
      *
      * @throws ClassFopException On creationOfPath when creation of path is not possible.
      * @since  v1.0
      */
-    public function __construct(string $path)
+    public function __construct(string $path, int $options = 0)
     {
+
+        // Read options.
+        if ($options > 0) {
+            $this->options = GeoProgression::getProgression($options);
+        }
 
         // Save.
         $this->path  = str_replace([ '/', '\\' ], $this->sep, $path);
@@ -132,8 +151,12 @@ class Path
      * @since  v1.0
      * @return string
      */
-    public function getPath() : string
+    public function getPath(bool $enforceEndingSlash = false) : string
     {
+
+        if ($enforceEndingSlash === true) {
+            $this->path = rtrim($this->path, $this->sep) . $this->sep;
+        }
 
         return $this->path;
     }
@@ -142,7 +165,7 @@ class Path
      * Called to create all nonexisting directories on this path.
      *
      * @param boolean $createLastDirAlso Opt., false. If set to true last element of the path
-     *                                                is also treated as a dir and created.
+     *                                   is also treated as a dir and created.
      *
      * @since  v1.0
      * @return void
@@ -151,9 +174,9 @@ class Path
     {
 
         // Calculate starting path (from cwd).
-        $risingPath = $this->calculateRisingPath();
+        $risingPath   = $this->calculateRisingPath();
         $partsButLast = array_slice($this->parts, 0, ( count($this->parts) - 1 ));
-        $lastPart = implode('', array_slice($this->parts, -1));
+        $lastPart     = implode('', array_slice($this->parts, -1));
 
         // Parts from 0 to (n-1) have to be dirs if existing.
         foreach ($partsButLast as $partNo => $part) {
@@ -162,7 +185,7 @@ class Path
             $risingPath .= $part;
 
             // Test.
-            if (file_exists($risingPath) === false) {
+            if (empty($risingPath) === false && file_exists($risingPath) === false) {
                 mkdir($risingPath);
             }
 
@@ -196,11 +219,11 @@ class Path
     {
 
         // Calculate starting path (from cwd).
-        $risingPath = $this->calculateRisingPath();
+        $risingPath    = $this->calculateRisingPath();
         $partsReversed = array_reverse($this->parts, true);
 
         // Analyze every dir in reversed order.
-        foreach ($partsReversed As $partNo => $part) {
+        foreach ($partsReversed as $partNo => $part) {
 
             // Do not delete earlier dirs than this index.
             if ($partNo < $startingWithPart) {
@@ -208,10 +231,10 @@ class Path
             }
 
             // Lvd.
-            $fullPath = implode($this->sep, array_slice($this->parts, 0, ($partNo + 1)));
+            $fullPath = implode($this->sep, array_slice($this->parts, 0, ( $partNo + 1 )));
 
             // If this is already deleted (nonexisting) - then ignore.
-            if (!file_exists($fullPath)) {
+            if (file_exists($fullPath) === false) {
                 continue;
             }
 
@@ -222,7 +245,7 @@ class Path
 
             // Everything looks nice - delete.
             rmdir($fullPath);
-        }
+        }//end foreach
     }
 
     /**
@@ -304,7 +327,7 @@ class Path
 
         // Run regex test to make sure this is proper path part.
         try {
-            $result = RegEx::ifMatches($part, '/^([a-zA-Z0-9_\.])+$/');
+            $result = RegEx::ifMatches($part, '/^([a-zA-Z0-9_\.\:])+$/');
         } catch (RegexTestFailException $e) {
             if ($throw === true) {
                 throw new ParamWrosynException('partOfPath', $part, $e);
@@ -312,5 +335,26 @@ class Path
         }
 
         return $result;
+    }
+
+    public function readFiles() : array
+    {
+
+        // Throw if try to read files from non-dir element.
+        if ($this->isDir() === false) {
+            throw (new MethodFopException('readFilesFromNonDir', $e))
+                ->addInfo('path', $this->getPath());
+        }
+
+        // Read all files
+        $files = scandir($this->getPath());
+
+        foreach ($files as $i => $file) {
+            if (is_file($this->getPath(true) . $file) === false) {
+                unset($files[$i]);
+            }
+        }
+
+        return $files;
     }
 }
