@@ -4,6 +4,7 @@ namespace Przeslijmi\SiHDD;
 
 use PHPUnit\Framework\TestCase;
 use Przeslijmi\Sexceptions\Exceptions\ClassFopException;
+use Przeslijmi\Sexceptions\Exceptions\MethodFopException;
 use Przeslijmi\SiHDD\Path;
 
 /**
@@ -29,6 +30,21 @@ final class PathTest extends TestCase
         $this->assertFalse($path->isFile());
         $this->assertTrue($path->isNotFile());
         $this->assertEquals('config\\', $path->getPath());
+        $this->assertTrue(( $path->countFiles() >= 0 ));
+    }
+
+    /**
+     * Test if getting dir path in both variants works.
+     *
+     * @return void
+     */
+    public function testIfGettingDirPathWorks() : void
+    {
+
+        $path = new Path('config');
+
+        $this->assertEquals('config', $path->getPath());
+        $this->assertEquals('config\\', $path->getPath(true));
     }
 
     /**
@@ -48,6 +64,8 @@ final class PathTest extends TestCase
      * Test if creating and deleting Path works.
      *
      * @return void
+     *
+     * @phpcs:disable Zend.NamingConventions.ValidVariableName.ContainsNumbers
      */
     public function testIfCreationAndDeletionWorks() : void
     {
@@ -130,5 +148,20 @@ final class PathTest extends TestCase
 
         // Create Path.
         $path = new Path('config/.config.php/dirBelowFileWhat');
+    }
+
+    /**
+     * Test if reading list of files on file (not dir) throws.
+     *
+     * @return void
+     */
+    public function testIfReadingListOfFileOfNondirThrows() : void
+    {
+
+        $this->expectException(MethodFopException::class);
+
+        // Create Path.
+        $path = new Path('config/.config.php');
+        $path->readFiles();
     }
 }

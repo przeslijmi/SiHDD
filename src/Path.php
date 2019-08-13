@@ -18,10 +18,11 @@ class Path
     /**
      * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
      *
-     * @todo There is no control.
-     * @var  int
+     * @var int
      */
-    const ALLOW_DIR_DOTS = 1;
+    const ALLOW_DIR_DOTS               = 1;
+    const ALLOW_NATIONAL_LETTERS_NAMES = 2;
+    const ALLOW_SPACES_IN_NAMES        = 4;
 
     /**
      * String representation of whole path.
@@ -45,6 +46,14 @@ class Path
     private $sep = DIRECTORY_SEPARATOR;
 
     /**
+     * Options sent on construction.
+     *
+     * @var   array
+     * @since v1.0
+     */
+    private $options = [];
+
+    /**
      * Constructor.
      *
      * @param string  $path    Whole path.
@@ -58,7 +67,7 @@ class Path
 
         // Read options.
         if ($options > 0) {
-            $this->options = GeoProgression::getProgression($options);
+            $this->options = array_fill_keys(GeoProgression::get($options), true);
         }
 
         // Save.
@@ -147,6 +156,8 @@ class Path
 
     /**
      * Getter for `this->path`.
+     *
+     * @param boolean $enforceEndingSlash Optional, false. When set to true slash will be added at the end.
      *
      * @since  v1.0
      * @return string
@@ -249,6 +260,47 @@ class Path
     }
 
     /**
+     * Return list of files in this directory (with path) as an array.
+     *
+     * @since  v1.0
+     * @throws MethodFopException When this is not a dir.
+     * @return string[]
+     */
+    public function readFiles() : array
+    {
+
+        // Throw if try to read files from non-dir element.
+        if ($this->isDir() === false) {
+            throw (new MethodFopException('readFilesFromNonDir'))
+                ->addInfo('path', $this->getPath());
+        }
+
+        // Read all files.
+        $files = scandir($this->getPath());
+
+        // Delete nonfiles.
+        foreach ($files as $i => $file) {
+            if (is_file($this->getPath(true) . $file) === false) {
+                unset($files[$i]);
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * Returns number of files in this directory.
+     *
+     * @since  v1.0
+     * @return integer
+     */
+    public function countFiles() : int
+    {
+
+        return count($this->readFiles());
+    }
+
+    /**
      * Calculate starting path (from cwd).
      *
      * When path begins with / - it will be use it is (nothing added).
@@ -325,9 +377,22 @@ class Path
             return true;
         }
 
+        // Lvd regex.
+        $regex         = '';
+        $regexNational = '';
+        $regexSpaces   = '';
+
+        if (isset($this->options[self::ALLOW_NATIONAL_LETTERS_NAMES]) === true) {
+            $regexNational = 'ążśźęćńółĄŻŚŹĘĆŃÓŁ';
+        }
+        if (isset($this->options[self::ALLOW_SPACES_IN_NAMES]) === true) {
+            $regexSpaces = '\ ';
+        }
+        $regex = '/^([a-zA-Z0-9_\-\.' . $regexNational . $regexSpaces . '\:])+$/';
+
         // Run regex test to make sure this is proper path part.
         try {
-            $result = RegEx::ifMatches($part, '/^([a-zA-Z0-9_\.\:])+$/');
+            $result = RegEx::ifMatches($part, $regex);
         } catch (RegexTestFailException $e) {
             if ($throw === true) {
                 throw new ParamWrosynException('partOfPath', $part, $e);
@@ -335,26 +400,5 @@ class Path
         }
 
         return $result;
-    }
-
-    public function readFiles() : array
-    {
-
-        // Throw if try to read files from non-dir element.
-        if ($this->isDir() === false) {
-            throw (new MethodFopException('readFilesFromNonDir', $e))
-                ->addInfo('path', $this->getPath());
-        }
-
-        // Read all files
-        $files = scandir($this->getPath());
-
-        foreach ($files as $i => $file) {
-            if (is_file($this->getPath(true) . $file) === false) {
-                unset($files[$i]);
-            }
-        }
-
-        return $files;
     }
 }

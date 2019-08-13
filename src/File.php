@@ -25,10 +25,11 @@ class File
     /**
      * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
      *
-     * @todo There is no control.
-     * @var  int
+     * @var int
      */
-    const ALLOW_DIR_DOTS = 1;
+    const ALLOW_DIR_DOTS               = 1;
+    const ALLOW_NATIONAL_LETTERS_NAMES = 2;
+    const ALLOW_SPACES_IN_NAMES        = 4;
 
     /**
      * Path object.
@@ -69,7 +70,7 @@ class File
 
         // Read options.
         if ($options > 0) {
-            $this->options = GeoProgression::getProgression($options);
+            $this->options = array_fill_keys(GeoProgression::get($options), true);
         }
 
         // Save path.
