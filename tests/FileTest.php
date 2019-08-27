@@ -34,15 +34,15 @@ final class FileTest extends TestCase
         $expectedContents .= 'next line of contents';
         $this->assertEquals($expectedContents, $file->getContents());
 
-        $this->assertTrue($file->getPath()->isExisting());
-        $this->assertFalse($file->getPath()->isNotExisting());
-        $this->assertFalse($file->getPath()->isDir());
-        $this->assertTrue($file->getPath()->isNotDir());
-        $this->assertTrue($file->getPath()->isFile());
-        $this->assertFalse($file->getPath()->isNotFile());
+        $this->assertTrue($file->isExisting());
+        $this->assertFalse($file->isNotExisting());
+        $this->assertFalse($file->isDir());
+        $this->assertTrue($file->isNotDir());
+        $this->assertTrue($file->isFile());
+        $this->assertFalse($file->isNotFile());
 
         $file->deleteIfExists();
-        $this->assertFalse($file->getPath()->isExisting());
+        $this->assertFalse($file->isExisting());
     }
 
     /**
@@ -69,7 +69,7 @@ final class FileTest extends TestCase
         $path = 'config\\.temp    .php';
 
         $file = new File($path, File::ALLOW_SPACES_IN_NAMES);
-        $this->assertEquals($path, $file->getPath()->getPath());
+        $this->assertEquals($path, $file->getPath());
     }
 
     /**
@@ -83,7 +83,7 @@ final class FileTest extends TestCase
         $path = 'config\\.temp.żądło.php';
 
         $file = new File($path, File::ALLOW_NATIONAL_LETTERS_NAMES);
-        $this->assertEquals($path, $file->getPath()->getPath());
+        $this->assertEquals($path, $file->getPath());
     }
 
     /**

@@ -30,7 +30,6 @@ final class PathTest extends TestCase
         $this->assertFalse($path->isFile());
         $this->assertTrue($path->isNotFile());
         $this->assertEquals('config\\', $path->getPath());
-        $this->assertTrue(( $path->countFiles() >= 0 ));
     }
 
     /**
@@ -148,20 +147,5 @@ final class PathTest extends TestCase
 
         // Create Path.
         $path = new Path('config/.config.php/dirBelowFileWhat');
-    }
-
-    /**
-     * Test if reading list of files on file (not dir) throws.
-     *
-     * @return void
-     */
-    public function testIfReadingListOfFileOfNondirThrows() : void
-    {
-
-        $this->expectException(MethodFopException::class);
-
-        // Create Path.
-        $path = new Path('config/.config.php');
-        $path->readFiles();
     }
 }

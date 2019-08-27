@@ -2,6 +2,8 @@
 
 namespace Przeslijmi\SiHDD;
 
+use Przeslijmi\SiHDD\Path;
+
 use Przeslijmi\Sexceptions\Exceptions\ClassFopException;
 use Przeslijmi\Sexceptions\Exceptions\FileAlrexException;
 use Przeslijmi\Sexceptions\Exceptions\FileDonoexException;
@@ -19,25 +21,8 @@ use Przeslijmi\Sivalidator\GeoProgression;
  * $file->save();
  * ```
  */
-class File
+class File extends Path
 {
-
-    /**
-     * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
-     *
-     * @var int
-     */
-    const ALLOW_DIR_DOTS               = 1;
-    const ALLOW_NATIONAL_LETTERS_NAMES = 2;
-    const ALLOW_SPACES_IN_NAMES        = 4;
-
-    /**
-     * Path object.
-     *
-     * @var   Path
-     * @since v1.0
-     */
-    private $path;
 
     /**
      * Contents of the file.
@@ -46,14 +31,6 @@ class File
      * @since v1.0
      */
     private $contents = '';
-
-    /**
-     * Options sent on construction.
-     *
-     * @var   array
-     * @since v1.0
-     */
-    private $options = [];
 
     /**
      * Constructor.
@@ -68,21 +45,16 @@ class File
     public function __construct(string $fullPath, int $options = 0)
     {
 
-        // Read options.
-        if ($options > 0) {
-            $this->options = array_fill_keys(GeoProgression::get($options), true);
-        }
-
-        // Save path.
+        // Create Path.
         try {
-            $this->path = new Path($fullPath, $options);
+            parent::__construct($fullPath, $options);
         } catch (ClassFopException $e) {
             throw (new ClassFopException('creationOfFile', $e))->addInfo('fullPath', $fullPath);
         }
 
         // Check if this is not dir path.
-        if ($this->path->isDir() === true) {
-            throw (new ClassFopException('filePathCannotBeADirPath'))->addInfo('fullPath', $fullPath);
+        if ($this->isDir() === true) {
+            throw (new ClassFopException('filePathCannotBeANonFilePath'))->addInfo('fullPath', $fullPath);
         }
     }
 
@@ -115,18 +87,6 @@ class File
     }
 
     /**
-     * Getter for Path object.
-     *
-     * @since  v1.0
-     * @return Path
-     */
-    public function getPath() : Path
-    {
-
-        return $this->path;
-    }
-
-    /**
      * Reads file from location and returns contents.
      *
      * @return string
@@ -137,12 +97,12 @@ class File
     public function read() : string
     {
 
-        if ($this->path->isNotExisting() === true) {
-            throw new FileDonoexException('read', $this->path->getPath());
-        } elseif ($this->path->isNotFile() === true) {
-            throw (new PointerWrosynException('readFileButIsNotAFile'))->addInfo('fullPath', $this->path->getPath());
+        if ($this->isNotExisting() === true) {
+            throw new FileDonoexException('read', $this->getPath());
+        } elseif ($this->isNotFile() === true) {
+            throw (new PointerWrosynException('readFileButIsNotAFile'))->addInfo('fullPath', $this->getPath());
         } else {
-            $this->contents = file_get_contents($this->path->getPath());
+            $this->contents = file_get_contents($this->getPath());
         }
 
         return $this->contents;
@@ -157,7 +117,7 @@ class File
     public function readIfExists() : string
     {
 
-        if ($this->path->isFile() === true) {
+        if ($this->isFile() === true) {
             return $this->read();
         }
 
@@ -176,11 +136,11 @@ class File
     public function save() : void
     {
 
-        if ($this->path->isNotExisting() === true) {
-            $this->path->createDirs();
+        if ($this->isNotExisting() === true) {
+            $this->createDirs();
         }
 
-        file_put_contents($this->path->getPath(), $this->contents);
+        file_put_contents($this->getPath(), $this->contents);
     }
 
     /**
@@ -223,11 +183,11 @@ class File
     public function delete() : void
     {
 
-        if ($this->path->isNotExisting() === true) {
-            throw new FileDonoexException('unableToDeleteNonexistingFile', $this->path->getPath());
+        if ($this->isNotExisting() === true) {
+            throw new FileDonoexException('unableToDeleteNonexistingFile', $this->getPath());
         }
 
-        unlink($this->path->getPath());
+        unlink($this->getPath());
     }
 
     /**
@@ -239,7 +199,7 @@ class File
     public function deleteIfExists() : void
     {
 
-        if ($this->path->isExisting() === true) {
+        if ($this->isExisting() === true) {
             $this->delete();
         }
     }
@@ -254,8 +214,8 @@ class File
     public function create() : void
     {
 
-        if ($this->path->isExisting() === true) {
-            throw new FileAlrexException('unableToCreateExistingFile', $this->path->getPath());
+        if ($this->isExisting() === true) {
+            throw new FileAlrexException('unableToCreateExistingFile', $this->getPath());
         }
 
         $this->save();

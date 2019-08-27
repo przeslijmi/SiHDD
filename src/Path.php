@@ -10,38 +10,45 @@ use Przeslijmi\Sivalidator\GeoProgression;
 use Przeslijmi\Sivalidator\RegEx;
 
 /**
- * Object representing dir - used alone or incompound with File.
+ * Object representing path (of Dir or File or alone).
  */
 class Path
 {
 
     /**
-     * If used uris containing /../ or /./ will be accepted. Otherwis exception will be thrown.
+     * If used uris containing /../ or /./ will be accepted. Otherwise exception will be thrown.
      *
-     * @var int
+     * @var   int
+     * @since v1.0
      */
     const ALLOW_DIR_DOTS               = 1;
     const ALLOW_NATIONAL_LETTERS_NAMES = 2;
     const ALLOW_SPACES_IN_NAMES        = 4;
+    const DIR_READ_RECURSIVELY         = 8;
+    const DIR_READ_IGNORE_DIRS         = 16;
+    const DIR_READ_IGNORE_FILES        = 32;
 
     /**
      * String representation of whole path.
      *
-     * @var string
+     * @var   string
+     * @since v1.0
      */
     private $path = '';
 
     /**
      * Parts of the path (dirs and optionally file as last one).
      *
-     * @var array
+     * @var   array
+     * @since v1.0
      */
     private $parts = [];
 
     /**
      * Directory separator (taken from constant DIRECTORY_SEPARATOR).
      *
-     * @var sting
+     * @var   sting
+     * @since v1.0
      */
     private $sep = DIRECTORY_SEPARATOR;
 
@@ -51,7 +58,7 @@ class Path
      * @var   array
      * @since v1.0
      */
-    private $options = [];
+    protected $options = [];
 
     /**
      * Constructor.
@@ -76,7 +83,7 @@ class Path
 
         // Test.
         try {
-            $this->test();
+            $this->testPath();
         } catch (ParamWrosynException $e) {
             throw (new ClassFopException('creationOfPath', $e))->addInfo('fullPath', $path);
         }
@@ -260,53 +267,13 @@ class Path
     }
 
     /**
-     * Return list of files in this directory (with path) as an array.
-     *
-     * @since  v1.0
-     * @throws MethodFopException When this is not a dir.
-     * @return string[]
-     */
-    public function readFiles() : array
-    {
-
-        // Throw if try to read files from non-dir element.
-        if ($this->isDir() === false) {
-            throw (new MethodFopException('readFilesFromNonDir'))
-                ->addInfo('path', $this->getPath());
-        }
-
-        // Read all files.
-        $files = scandir($this->getPath());
-
-        // Delete nonfiles.
-        foreach ($files as $i => $file) {
-            if (is_file($this->getPath(true) . $file) === false) {
-                unset($files[$i]);
-            }
-        }
-
-        return $files;
-    }
-
-    /**
-     * Returns number of files in this directory.
-     *
-     * @since  v1.0
-     * @return integer
-     */
-    public function countFiles() : int
-    {
-
-        return count($this->readFiles());
-    }
-
-    /**
      * Calculate starting path (from cwd).
      *
      * When path begins with / - it will be use it is (nothing added).
      * When path begins not with / - current working dir (cwd) will be added.
      *
-     * @return [type] [description]
+     * @since  v1.0
+     * @return string
      */
     private function calculateRisingPath() : string
     {
@@ -328,7 +295,7 @@ class Path
      * @since  v1.0
      * @return void
      */
-    private function test() : void
+    private function testPath() : void
     {
 
         // Every part has to be proper.
