@@ -83,6 +83,8 @@ class Dir extends Path
      *
      * @since  v2.0
      * @return integer
+     *
+     * @phpcs:disable Generic.Metrics.CyclomaticComplexity
      */
     public function count(?string $mask = null, bool $onlyFiles = false, bool $onlyDirs = false) : int
     {
