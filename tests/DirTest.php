@@ -27,7 +27,7 @@ final class DirTest extends TestCase
 
         // Compose result [ dirUri, hasPhpFiles, hasAnyFiles, hasDirs ].
         $uris = [
-            [ $moduleDir, false, true, true ],
+            [ $moduleDir, true, true, true ],
             [ $moduleDir . 'src\\', true, true, false ],
             [ $moduleDir . 'tests\\emptyDir\\', false, false, false ],
         ];
