@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.2 - 2019-11-10
+
+- Changed `build.sh.dist`.
+
 ## v2.1.1 - 2019-11-09
 
 - Added `phpcs.xml`.
