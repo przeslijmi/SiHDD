@@ -26,7 +26,7 @@
   <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
   <rule ref="Generic.Commenting.DocComment"/>
   <rule ref="Generic.Commenting.Fixme"/>
-  <rule ref="Generic.Commenting.Todo"/>
+  <!-- <rule ref="Generic.Commenting.Todo"/> -->
   <rule ref="Generic.ControlStructures.InlineControlStructure"/>
   <rule ref="Generic.Debug.ClosureLinter"/>
   <rule ref="Generic.Debug.CSSLint"/>
@@ -135,7 +135,9 @@
   <rule ref="Squiz.ControlStructures.ForLoopDeclaration"/>
   <rule ref="Squiz.ControlStructures.InlineIfDeclaration"/>
   <rule ref="Squiz.ControlStructures.LowercaseDeclaration"/>
-  <rule ref="Squiz.ControlStructures.SwitchDeclaration"/>
+  <rule ref="Squiz.ControlStructures.SwitchDeclaration">
+    <exclude name="Squiz.ControlStructures.SwitchDeclaration.MissingDefault"/>
+  </rule>
   <rule ref="Squiz.CSS.ClassDefinitionClosingBraceSpace"/>
   <rule ref="Squiz.CSS.ClassDefinitionNameSpacing"/>
   <rule ref="Squiz.CSS.ClassDefinitionOpeningBraceSpace"/>

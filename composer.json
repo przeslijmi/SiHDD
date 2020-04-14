@@ -14,6 +14,12 @@
     "php" : "^7.3",
     "przeslijmi/sexceptions": "~1.0"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/przeslijmi/sexceptions"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "Przeslijmi\\SiHDD\\": "src/",

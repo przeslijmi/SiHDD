@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.3 - 2020-04-14
+
+- Added `shippable.yml`.
+- Added badges.
+- Added new tests - 100% code coverage.
+- Updated `composer.json`.
+- Deleted `build.sh` and `build.sh.dist`.
+
 ## v2.1.2 - 2019-11-10
 
 - Changed `build.sh.dist`.

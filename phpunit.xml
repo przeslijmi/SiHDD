@@ -1,5 +1,6 @@
 <phpunit
-  bootstrap="../../../bootstrapForTests.php"
+  bootstrap="bootstrap.php"
+  convertDeprecationsToExceptions="true"
   convertErrorsToExceptions="true"
   convertNoticesToExceptions="true"
   convertWarningsToExceptions="true"
@@ -11,6 +12,11 @@
   stopOnSkipped="true"
   stopOnRisky="true"
   verbose="true">
+  <testsuites>
+    <testsuite name="Test Suite">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
       <directory>src/</directory>

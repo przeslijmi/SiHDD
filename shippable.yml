@@ -1,0 +1,15 @@
+language: php
+
+php:
+  - "7.3"
+
+env:
+  - secure: QvnODZjoI31bFKlr3+mpfdNPi4aDmwKugYMNld7wrTO+kHgJAp0l1Zt9PygXj4z7wLz8kmzPSfyqhDcSv78l5hPVFbkHIG7h/sJcXQYS8uOedeoBNHX5p/EwvbkY4eYAUz1eR0EvgcaTRfXzXiUDAWF4pMutetafEsfKDX8rr8lkZk4PgS2nOgArAJaMKV6otwQCodFIr7Te5WzIhiW6uWvWKrPMhBJpzYe8ruuw2KuQcO/ngyiHMcV1t2lx5syULd51LeKT9B+mF03R9EOb8XcX2SvMSAc/3/ZHxwmQF83/ZjMgppvkXSSVDXmkPpLvJ5lTqxDav9b6MqGbBEbwjw==
+
+before_script:
+  - composer config -g github-oauth.github.com $GH_TOKEN
+  - composer self-update -n
+  - composer install --prefer-source --no-interaction
+
+script:
+  - phpunit --log-junit shippable/testresults/junit.xml --coverage-xml shippable/codecoverage
