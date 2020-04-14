@@ -107,7 +107,7 @@ final class PathTest extends TestCase
     {
 
         // Lvd.
-        $pathString = 'config';
+        $pathString = 'src';
 
         // Create Path.
         $path = new Path($pathString);
@@ -146,6 +146,6 @@ final class PathTest extends TestCase
         $this->expectException(ClassFopException::class);
 
         // Create Path.
-        $path = new Path('config/.config.php/dirBelowFileWhat');
+        $path = new Path('src/Dir.php/hello');
     }
 }
