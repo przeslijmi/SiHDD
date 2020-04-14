@@ -183,7 +183,7 @@ final class FileTest extends TestCase
 
         $this->expectException(FileAlrexException::class);
 
-        $file = new File('config\\.config.php');
+        $file = new File('bootstrap.php');
         $file->create();
     }
 }
