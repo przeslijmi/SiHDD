@@ -279,12 +279,25 @@ class Path
     {
 
         // Lvd.
-        $isReal = (bool) realpath($this->parts[0]);
+        $isAbsolute     = false;
+        $absolutePrefix = '';
+        $host           = 'nonwindows';
+
+        // Decide on host.
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $host = 'windows';
+        }
+
+        // Check if this absolute.
+        if ($host === 'windows' && strpos($this->parts[0], ':') !== false) {
+            $isAbsolute = true;
+        }
+        if (empty($this->parts[0]) === true) {
+            $isAbsolute = true;
+        }
 
         // Decide.
-        if ($isReal === true || empty($this->parts[0]) === true) {
-            $absolutePrefix = '';
-        } else {
+        if ($isAbsolute === false) {
             $absolutePrefix = rtrim(str_replace('\\', '/', getcwd()), $this->sep) . $this->sep;
         }
 
