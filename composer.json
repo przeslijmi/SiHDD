@@ -1,7 +1,7 @@
 {
   "name": "przeslijmi/sihdd",
   "description": "PHP library that standaridze HDD operations.",
-  "version": "v2.1.2",
+  "version": "v2.1.3",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -10,20 +10,26 @@
       "email": "przeslijmi@gmail.com"
     }
   ],
-  "require": {
-    "php" : "^7.3",
-    "przeslijmi/sexceptions": "~1.0"
-  },
   "repositories": [
     {
       "type": "vcs",
       "url": "https://github.com/przeslijmi/sexceptions"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/przeslijmi/sivalidator"
     }
   ],
+  "require": {
+    "php" : "^7.3",
+    "przeslijmi/sexceptions": "~1.0",
+    "przeslijmi/sivalidator": ">0"
+  },
   "autoload": {
     "psr-4": {
       "Przeslijmi\\SiHDD\\": "src/",
-      "Przeslijmi\\Sexceptions\\": "../../przeslijmi/sexceptions/src/"
+      "Przeslijmi\\Sexceptions\\": "vendor/przeslijmi/sexceptions/src/",
+      "Przeslijmi\\Sivalidator\\": "vendor/przeslijmi/sivalidator/src/"
     }
   }
 }
