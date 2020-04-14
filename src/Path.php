@@ -45,12 +45,12 @@ class Path
     private $parts = [];
 
     /**
-     * Directory separator (taken from constant DIRECTORY_SEPARATOR).
+     * Directory separator.
      *
      * @var   sting
      * @since v1.0
      */
-    private $sep = DIRECTORY_SEPARATOR;
+    private $sep = '/';
 
     /**
      * Options sent on construction.
@@ -192,7 +192,7 @@ class Path
     {
 
         // Calculate starting path (from cwd).
-        $risingPath   = $this->calculateRisingPath();
+        $risingPath   = $this->getAbsolutePathPrefix();
         $partsButLast = array_slice($this->parts, 0, ( count($this->parts) - 1 ));
         $lastPart     = implode('', array_slice($this->parts, -1));
 
@@ -237,7 +237,7 @@ class Path
     {
 
         // Calculate starting path (from cwd).
-        $risingPath    = $this->calculateRisingPath();
+        $risingPath    = $this->getAbsolutePathPrefix();
         $partsReversed = array_reverse($this->parts, true);
 
         // Analyze every dir in reversed order.
@@ -267,7 +267,7 @@ class Path
     }
 
     /**
-     * Calculate starting path (from cwd).
+     * Calculate absolute path prefix (from cwd).
      *
      * When path begins with / - it will be use it is (nothing added).
      * When path begins not with / - current working dir (cwd) will be added.
@@ -275,17 +275,20 @@ class Path
      * @since  v1.0
      * @return string
      */
-    private function calculateRisingPath() : string
+    private function getAbsolutePathPrefix() : string
     {
 
-        if (empty($this->parts[0]) === true) {
-            $risingPath = '';
+        // Lvd.
+        $isReal = (bool) realpath($this->parts[0]);
+
+        // Decide.
+        if ($isReal === true || empty($this->parts[0]) === true) {
+            $absolutePrefix = '';
         } else {
-            // It is still a string.
-            $risingPath = rtrim(getcwd(), $this->sep) . $this->sep;
+            $absolutePrefix = rtrim(str_replace('\\', '/', getcwd()), $this->sep) . $this->sep;
         }
 
-        return $risingPath;
+        return $absolutePrefix;
     }
 
     /**
@@ -304,7 +307,7 @@ class Path
         }
 
         // Calculate starting path (from cwd).
-        $risingPath = $this->calculateRisingPath();
+        $risingPath = $this->getAbsolutePathPrefix();
 
         // Parts from 0 to (n-1) have to be dirs if existing.
         foreach (array_slice($this->parts, 0, ( count($this->parts) - 1 )) as $partNo => $part) {

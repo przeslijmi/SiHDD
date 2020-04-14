@@ -209,7 +209,7 @@ class Dir extends Path
 
         // Make deeper end with slash.
         if (empty($deeper) === false) {
-            $deeper = rtrim($deeper, '\\') . '\\';
+            $deeper = rtrim($deeper, '/') . '/';
         }
 
         // Read all elements.

@@ -29,7 +29,7 @@ final class PathTest extends TestCase
         $this->assertFalse($path->isNotDir());
         $this->assertFalse($path->isFile());
         $this->assertTrue($path->isNotFile());
-        $this->assertEquals('config\\', $path->getPath());
+        $this->assertEquals('config/', $path->getPath());
     }
 
     /**
@@ -43,7 +43,7 @@ final class PathTest extends TestCase
         $path = new Path('config');
 
         $this->assertEquals('config', $path->getPath());
-        $this->assertEquals('config\\', $path->getPath(true));
+        $this->assertEquals('config/', $path->getPath(true));
     }
 
     /**
@@ -126,7 +126,7 @@ final class PathTest extends TestCase
     {
 
         // Lvd.
-        $pathString = '\\config';
+        $pathString = '/config';
 
         // Create Path.
         $path = new Path($pathString);
@@ -143,9 +143,15 @@ final class PathTest extends TestCase
     public function testIfCreationOfDirBelowFileThrows() : void
     {
 
+        // Prepare.
         $this->expectException(ClassFopException::class);
 
+        // Lvd.
+        $dir = dirname(__DIR__);
+        $dir = str_replace('\\', '/', $dir);
+        $dir = $dir . '/src/Dir.php/hello';
+
         // Create Path.
-        $path = new Path('src/Dir.php/hello');
+        $path = new Path($dir);
     }
 }

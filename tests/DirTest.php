@@ -22,14 +22,14 @@ final class DirTest extends TestCase
     {
 
         // Calulate dir.
-        $moduleDir = rtrim(__DIR__, '\\');
-        $moduleDir = substr($moduleDir, 0, strrpos($moduleDir, '\\')) . '\\';
+        $moduleDir = rtrim(str_replace('\\', '/', __DIR__), '/');
+        $moduleDir = substr($moduleDir, 0, strrpos($moduleDir, '/')) . '/';
 
         // Compose result [ dirUri, hasPhpFiles, hasAnyFiles, hasDirs ].
         $uris = [
             [ $moduleDir, true, true, true ],
-            [ $moduleDir . 'src\\', true, true, false ],
-            [ $moduleDir . 'tests\\emptyDir\\', false, false, false ],
+            [ $moduleDir . 'src/', true, true, false ],
+            [ $moduleDir . 'tests/emptyDir/', false, false, false ],
         ];
 
         return $uris;
@@ -44,8 +44,8 @@ final class DirTest extends TestCase
     {
 
         // Calulate dir.
-        $moduleDir = rtrim(__DIR__, '\\');
-        $moduleDir = substr($moduleDir, 0, strrpos($moduleDir, '\\')) . '\\';
+        $moduleDir = rtrim(str_replace('\\', '/', __DIR__), '/');
+        $moduleDir = substr($moduleDir, 0, strrpos($moduleDir, '/')) . '/';
 
         // Compose result [ dirUri, hasPhpFiles, hasAnyFiles, hasDirs ].
         $uris = [

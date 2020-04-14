@@ -22,7 +22,7 @@ final class FileTest extends TestCase
     public function testProperCreation() : void
     {
 
-        $file = new File('config\\.temp.' . rand(1000, 9999) . '.php');
+        $file = new File('config/.temp.' . rand(1000, 9999) . '.php');
         $file->setContents('contents');
         $file->create();
         $file->append(' nextContents');
@@ -55,7 +55,7 @@ final class FileTest extends TestCase
 
         $this->expectException(ClassFopException::class);
 
-        $file = new File('config\\.temp    .php');
+        $file = new File('config/.temp    .php');
     }
 
     /**
@@ -66,7 +66,7 @@ final class FileTest extends TestCase
     public function testIfNotWrongNameNotThrows1() : void
     {
 
-        $path = 'config\\.temp    .php';
+        $path = 'config/.temp    .php';
 
         $file = new File($path, File::ALLOW_SPACES_IN_NAMES);
         $this->assertEquals($path, $file->getPath());
@@ -80,7 +80,7 @@ final class FileTest extends TestCase
     public function testIfNotWrongNameNotThrows2() : void
     {
 
-        $path = 'config\\.temp.żądło.php';
+        $path = 'config/.temp.żądło.php';
 
         $file = new File($path, File::ALLOW_NATIONAL_LETTERS_NAMES);
         $this->assertEquals($path, $file->getPath());
@@ -111,7 +111,7 @@ final class FileTest extends TestCase
         $this->expectException(FileDonoexException::class);
 
         // This is an nonexisting file - reading is impossible.
-        $file = new File('config\\nonexisting_file.' . rand(1000, 9999) . '.nef');
+        $file = new File('config/nonexisting_file.' . rand(1000, 9999) . '.nef');
         $file->read();
     }
 
@@ -124,7 +124,7 @@ final class FileTest extends TestCase
     {
 
         // This is an nonexisting file - reading is impossible.
-        $file = new File('config\\nonexisting_file.' . rand(1000, 9999) . '.nef');
+        $file = new File('config/nonexisting_file.' . rand(1000, 9999) . '.nef');
 
         $this->assertEquals('', $file->readIfExists());
     }
@@ -141,10 +141,10 @@ final class FileTest extends TestCase
         $rand = rand(1000, 9999);
 
         // Create File.
-        $file = new File('config\\test.' . $rand . '.txt');
+        $file = new File('config/test.' . $rand . '.txt');
 
         // Create Path to dir with identical name.
-        $path = new Path('config\\test.' . $rand . '.txt');
+        $path = new Path('config/test.' . $rand . '.txt');
         $path->createDirs(true);
 
         $this->expectException(PointerWrosynException::class);
@@ -169,7 +169,7 @@ final class FileTest extends TestCase
 
         $this->expectException(FileDonoexException::class);
 
-        $file = new File('config\\nonexisting_file.' . rand(1000, 9999) . '.nef');
+        $file = new File('config/nonexisting_file.' . rand(1000, 9999) . '.nef');
         $file->delete();
     }
 
