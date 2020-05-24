@@ -18,8 +18,7 @@ class Dir extends Path
     /**
      * Read list of files - filled by `read()` method - empty earlier; not reused.
      *
-     * @var   array
-     * @since v2.0
+     * @var array
      */
     private $elements;
 
@@ -30,7 +29,6 @@ class Dir extends Path
      * @param integer $options  Options transferred ad const (see above).
      *
      * @throws ClassFopException On creationOfPath when creation of path is not possible.
-     * @since  v2.0
      */
     public function __construct(string $fullPath, int $options = 0)
     {
@@ -51,23 +49,39 @@ class Dir extends Path
     /**
      * Reads and delivers elements (files and dirs) with mask for this Dir.
      *
-     * @param null|string $mask Optional. To be applied if given.
+     * @param null|string $mask      Optional. To be applied if given.
+     * @param boolean     $onlyFiles Optional (false). Set to true to read only files.
+     * @param boolean     $onlyDirs  Optional (false). Set to true to read only dirs.
      *
-     * @since  v2.0
      * @return string[]
      */
-    public function read(?string $mask = null) : array
+    public function read(?string $mask = null, bool $onlyFiles = false, bool $onlyDirs = false) : array
     {
 
         // Read all elements.
         $this->elements = $this->readRaw();
 
-        // Apply mask if needed.
-        if (empty($mask) === false) {
-            foreach ($this->elements as $uri => $element) {
-                if (fnmatch($mask, $element['uri']) === false) {
-                    unset($this->elements[$uri]);
-                }
+        // Short way - if none settings are needed.
+        if (empty($mask) === true && $onlyFiles === false && $onlyDirs === false) {
+            return array_keys($this->elements);
+        }
+
+        // Apply settings.
+        foreach ($this->elements as $uri => $element) {
+
+            // Apply mask.
+            if (empty($mask) === false && fnmatch($mask, $element['uri']) === false) {
+                unset($this->elements[$uri]);
+            }
+
+            // Apply onlyFiles.
+            if ($onlyFiles === true && $element['isFile'] === false) {
+                unset($this->elements[$uri]);
+            }
+
+            // Apply onlyDirs.
+            if ($onlyDirs === true && $element['isDir'] === false) {
+                unset($this->elements[$uri]);
             }
         }
 
@@ -81,7 +95,6 @@ class Dir extends Path
      * @param boolean     $onlyFiles Optional (false). Set to true to count only files.
      * @param boolean     $onlyDirs  Optional (false). Set to true to count only dirs.
      *
-     * @since  v2.0
      * @return integer
      *
      * @phpcs:disable Generic.Metrics.CyclomaticComplexity
@@ -137,7 +150,6 @@ class Dir extends Path
      *
      * @param null|string $mask Optional. To be applied if given.
      *
-     * @since  v2.0
      * @return integer
      */
     public function countFiles(?string $mask = null)
@@ -151,7 +163,6 @@ class Dir extends Path
      *
      * @param null|string $mask Optional. To be applied if given.
      *
-     * @since  v2.0
      * @return integer
      */
     public function countDirs(?string $mask = null) : int
@@ -161,9 +172,8 @@ class Dir extends Path
     }
 
     /**
-     * Add files modification times to every file in set.
+     * Add files modification times to every file in set and returns it.
      *
-     * @since  v2.0
      * @return array
      */
     public function addFilesMtimes() : array
@@ -195,7 +205,6 @@ class Dir extends Path
      *
      * @param string $deeper Deeper part of URI below Path.
      *
-     * @since  v2.0
      * @return string[]
      */
     private function readRaw(string $deeper = '') : array

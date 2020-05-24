@@ -84,7 +84,7 @@ final class DirTest extends TestCase
     }
 
     /**
-     * Test if reading dir properly works.
+     * Test if veryfing read dir works properly.
      *
      * @param string  $dirUri      Dir URI to be tested.
      * @param boolean $hasPhpFiles If this dir has any PHP files.
@@ -117,6 +117,38 @@ final class DirTest extends TestCase
         $this->assertEquals($hasAnything, (bool) count($dir->read()), 'thereIsAnything');
         $this->assertEquals($hasPhpFiles, (bool) count($dir->read('*.php')), 'readPhpFiles');
         $this->assertFalse((bool) count($dir->read('*.wrongExtension')), 'readNoneFiles');
+    }
+
+    /**
+     * Test if reading dir works properly.
+     *
+     * @param string  $dirUri      Dir URI to be tested.
+     * @param boolean $hasPhpFiles If this dir has any PHP files.
+     * @param boolean $hasAnyFiles If this dir has any files.
+     * @param boolean $hasDirs     If this dir has any dirs.
+     *
+     * @return void
+     *
+     * @dataProvider uriProvider
+     */
+    public function testIfReadingDirWorks(
+        string $dirUri,
+        bool $hasPhpFiles,
+        bool $hasAnyFiles,
+        bool $hasDirs
+    ) : void {
+
+        // Test.
+        $dir = new Dir($dirUri);
+        $this->assertEquals($hasPhpFiles, (bool) count($dir->read('*.php', true)), 'thereArePhpFiles');
+
+        // Test.
+        $dir = new Dir($dirUri);
+        $this->assertEquals($hasAnyFiles, (bool) count($dir->read(null, true)), 'thereAreFiles');
+
+        // Test.
+        $dir = new Dir($dirUri);
+        $this->assertEquals($hasDirs, (bool) count($dir->read(null, false, true)), 'thereAreDirs');
     }
 
     /**

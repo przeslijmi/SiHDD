@@ -27,8 +27,7 @@ class File extends Path
     /**
      * Contents of the file.
      *
-     * @var   string
-     * @since v1.0
+     * @var string
      */
     private $contents = '';
 
@@ -40,7 +39,6 @@ class File extends Path
      *
      * @throws ClassFopException With creationOfFile context when creation of ne Path object failed.
      * @throws ClassFopException With filePathCannotBeADirPath context when given path is directory.
-     * @since  v1.0
      */
     public function __construct(string $fullPath, int $options = 0)
     {
@@ -64,7 +62,6 @@ class File extends Path
      * @param string $contents Contents to be set (repleaced) in file.
      *
      * @return File
-     * @since  v1.0
      */
     public function setContents(string $contents) : File
     {
@@ -78,7 +75,6 @@ class File extends Path
      * File contents getter (read file before use).
      *
      * @return string
-     * @since  v1.0
      */
     public function getContents() : string
     {
@@ -92,7 +88,6 @@ class File extends Path
      * @return string
      * @throws FileDonoexException    When file does not exists.
      * @throws PointerWrosynException When the pointer points not to a file.
-     * @since  v1.0
      */
     public function read() : string
     {
@@ -112,7 +107,6 @@ class File extends Path
      * Reads file only if exists, otherwise returns empty string.
      *
      * @return string
-     * @since  v1.0
      */
     public function readIfExists() : string
     {
@@ -131,7 +125,6 @@ class File extends Path
      *
      * @return void
      * @throws ClassFopException On saveFailed.
-     * @since  v1.0
      */
     public function save() : void
     {
@@ -149,7 +142,6 @@ class File extends Path
      * @param string $contents Contents to be added.
      *
      * @return void
-     * @since  v1.0
      */
     public function append(string $contents) : void
     {
@@ -165,7 +157,6 @@ class File extends Path
      * @param string $contents Line contents to be added.
      *
      * @return void
-     * @since  v1.0
      */
     public function appendLine(string $contents) : void
     {
@@ -178,7 +169,6 @@ class File extends Path
      *
      * @return void
      * @throws FileDonoexException On unableToDeleteNonexistingFile.
-     * @since  v1.0
      */
     public function delete() : void
     {
@@ -194,7 +184,6 @@ class File extends Path
      * Deletes file from location if it exists.
      *
      * @return void
-     * @since  v1.0
      */
     public function deleteIfExists() : void
     {
@@ -209,7 +198,6 @@ class File extends Path
      *
      * @return void
      * @throws FileAlrexException On unableToCreateExistingFile.
-     * @since  v1.0
      */
     public function create() : void
     {

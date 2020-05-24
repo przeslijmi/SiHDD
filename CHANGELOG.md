@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.0 - 2020-05-24
+
+- Add `README.md`.
+- Added params for `Dir` `read()` method: `mask`, `onlyFiles`, `onlyDirs`.
+
 ## v2.1.3 - 2020-04-14
 
 - Added `shippable.yml`.

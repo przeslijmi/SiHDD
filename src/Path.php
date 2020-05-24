@@ -18,8 +18,7 @@ class Path
     /**
      * If used uris containing /../ or /./ will be accepted. Otherwise exception will be thrown.
      *
-     * @var   int
-     * @since v1.0
+     * @var int
      */
     const ALLOW_DIR_DOTS               = 1;
     const ALLOW_NATIONAL_LETTERS_NAMES = 2;
@@ -31,32 +30,28 @@ class Path
     /**
      * String representation of whole path.
      *
-     * @var   string
-     * @since v1.0
+     * @var string
      */
     private $path = '';
 
     /**
      * Parts of the path (dirs and optionally file as last one).
      *
-     * @var   array
-     * @since v1.0
+     * @var array
      */
     private $parts = [];
 
     /**
      * Directory separator.
      *
-     * @var   sting
-     * @since v1.0
+     * @var sting
      */
     private $sep = '/';
 
     /**
      * Options sent on construction.
      *
-     * @var   array
-     * @since v1.0
+     * @var array
      */
     protected $options = [];
 
@@ -67,7 +62,6 @@ class Path
      * @param integer $options Options transferred ad const (see above).
      *
      * @throws ClassFopException On creationOfPath when creation of path is not possible.
-     * @since  v1.0
      */
     public function __construct(string $path, int $options = 0)
     {
@@ -92,7 +86,6 @@ class Path
     /**
      * Tests if this path leads to an existing resource.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isExisting() : bool
@@ -104,7 +97,6 @@ class Path
     /**
      * Tests if this path leads to an nonexisting resource.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isNotExisting() : bool
@@ -116,7 +108,6 @@ class Path
     /**
      * Tests if this path leads to a directory.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isDir() : bool
@@ -128,7 +119,6 @@ class Path
     /**
      * Tests if this path leads not to a directory.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isNotDir() : bool
@@ -140,7 +130,6 @@ class Path
     /**
      * Tests if this path leads to a file.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isFile() : bool
@@ -152,7 +141,6 @@ class Path
     /**
      * Tests if this path leads not to a file.
      *
-     * @since  v1.0
      * @return boolean
      */
     public function isNotFile() : bool
@@ -166,7 +154,6 @@ class Path
      *
      * @param boolean $enforceEndingSlash Optional, false. When set to true slash will be added at the end.
      *
-     * @since  v1.0
      * @return string
      */
     public function getPath(bool $enforceEndingSlash = false) : string
@@ -185,7 +172,6 @@ class Path
      * @param boolean $createLastDirAlso Opt., false. If set to true last element of the path
      *                                   is also treated as a dir and created.
      *
-     * @since  v1.0
      * @return void
      */
     public function createDirs(bool $createLastDirAlso = false) : void
@@ -230,7 +216,6 @@ class Path
      *
      * @param integer $startingWithPart Obligatory - to delete whole path insert 0.
      *
-     * @since  v1.0
      * @return void
      */
     public function deleteEmptyDirs(int $startingWithPart) : void
@@ -272,7 +257,6 @@ class Path
      * When path begins with / - it will be use it is (nothing added).
      * When path begins not with / - current working dir (cwd) will be added.
      *
-     * @since  v1.0
      * @return string
      */
     private function getAbsolutePathPrefix() : string
@@ -308,7 +292,6 @@ class Path
      * Run several test on path given to constructor to check if path is proper.
      *
      * @throws ParamWrosynException When one of inner parts of path is an existing non-dir.
-     * @since  v1.0
      * @return void
      */
     private function testPath() : void
@@ -345,7 +328,6 @@ class Path
      * @param boolean $throw  Opt., true. Throws on error if set to true, otherwise return false.
      *
      * @throws ParamWrosynException When part of the path does not meat regex regulations.
-     * @since  v1.0
      * @return boolean
      */
     private function isPartOfPathProper(int $partNo, bool $throw = true) : bool
