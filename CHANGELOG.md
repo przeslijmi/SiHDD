@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.1 - 2020-07-10
+
+- Fix: regex for Path better calculating.
+
 ## v2.2.0 - 2020-05-24
 
 - Add `README.md`.

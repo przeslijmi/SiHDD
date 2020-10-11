@@ -1,7 +1,7 @@
 {
   "name": "przeslijmi/sihdd",
   "description": "PHP library that standaridze HDD operations.",
-  "version": "v2.2.0",
+  "version": "v2.2.1",
   "type": "library",
   "license": "MIT",
   "authors": [

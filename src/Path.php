@@ -347,13 +347,14 @@ class Path
         $regexNational = '';
         $regexSpaces   = '';
 
+        // Prepare final regex.
         if (isset($this->options[self::ALLOW_NATIONAL_LETTERS_NAMES]) === true) {
             $regexNational = 'ążśźęćńółĄŻŚŹĘĆŃÓŁ';
         }
         if (isset($this->options[self::ALLOW_SPACES_IN_NAMES]) === true) {
             $regexSpaces = '\ ';
         }
-        $regex = '/^([a-zA-Z0-9_\-\.' . $regexNational . $regexSpaces . '\:])+$/';
+        $regex = '/^([a-zA-Z0-9_\-\.\(\)' . $regexNational . $regexSpaces . '\:])+$/';
 
         // Run regex test to make sure this is proper path part.
         try {
