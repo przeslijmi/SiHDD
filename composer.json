@@ -22,7 +22,7 @@
   ],
   "require": {
     "php" : "^7|^8",
-    "przeslijmi/sexceptions": "~1.0",
+    "przeslijmi/sexceptions": ">=1.8",
     "przeslijmi/sivalidator": ">0"
   },
   "autoload": {
